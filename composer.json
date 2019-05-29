@@ -1,5 +1,5 @@
 {
-    "name": "laravel-admin-ext/chunk-file-upload",
+    "name": "catlane/chunk-file-upload",
     "description": "description...",
     "type": "library",
     "keywords": ["laravel-admin", "extension"],

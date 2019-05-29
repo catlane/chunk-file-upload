@@ -1,9 +1,6 @@
 laravel-admin extension
 ======
 
-[![Packagist](https://img.shields.io/packagist/l/laravel-admin-ext/media-manager.svg?maxAge=2592000)](https://packagist.org/packages/laravel-admin-ext/chunk-file-upload)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel-admin-ext/media-manager.svg?style=flat-square)](https://packagist.org/packages/laravel-admin-ext/chunk-file-upload)
-[![Pull request welcome](https://img.shields.io/badge/pr-welcome-green.svg?style=flat-square)]()
 
 文件上传小扩展，可支持大文件`分块分片`上传到七牛云or本地，优化您上传大文件的苦恼
 
@@ -14,7 +11,7 @@ laravel-admin extension
 ## 安装
 
 ```
-$ composer require laravel-admin-ext/chunk-file-upload" 
+$ composer require catlane/chunk-file-upload" 
 
 $ php artisan vendor:publish --tag=chunk-file-upload
 ```
