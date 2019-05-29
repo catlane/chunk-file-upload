@@ -3,7 +3,7 @@
     "description": "description...",
     "type": "library",
     "keywords": ["laravel-admin", "extension"],
-    "homepage": "https://github.com/laravel-admin-ext/chunk-file-upload",
+    "homepage": "https://github.com/catlane/chunk-file-upload",
     "license": "MIT",
     "authors": [
         {
