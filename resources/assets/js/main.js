@@ -139,13 +139,13 @@ function chunk_file ( name , accept , disk , driver ) {
     }
 
     var options = {
-        tokenUrl: '/' + window.chunk_file.prefix + '/' + "chunk-file-upload/get_qiniu_token" ,
+        tokenUrl: window.chunk_file.prefix + '/' + "chunk-file-upload/get_qiniu_token" ,
         mockToken: false ,
         hash: false ,
         disk: disk
     };
     if ( driver == 'local' ) {//本地
-        options.host = '/' + window.chunk_file.prefix + '/' + 'chunk-file-upload/upload';
+        options.host = window.chunk_file.prefix + '/' + 'chunk-file-upload/upload';
     } else if ( driver = 'qiniu' ) {
         options.host = "http://up.qiniu.com";
     }
@@ -460,7 +460,12 @@ function chunk_file ( name , accept , disk , driver ) {
                     data.push ( res.key );
 
                 } else {
-                    data = JSON.parse( data );
+                    try {
+                        data = JSON.parse( data );
+                    }catch ( e ) {
+                        data = new Array ();
+                    }
+
                     data.push ( res.key );
                 }
                 $ ( '#' + name + '-savedpath' ).val ( JSON.stringify ( data ) );
@@ -771,7 +776,11 @@ function chunk_file ( name , accept , disk , driver ) {
         var dataSrc = $li.attr ( 'dataSrc' );
         var data = $ ( '#' + name + '-savedpath' ).val ();
         if ( data ) {//不为空
-            data = JSON.parse( data );
+            try{
+                data = JSON.parse( data );
+            }catch ( e ) {
+                data = new Array ();
+            }
             for (var i = 0; i < data.length; i++) {
                 if (dataSrc == data[i] ) {
                     data.splice ( i , 1 );

@@ -30,7 +30,10 @@
                 </div>
             </div>
         </div>
-        <input type="hidden" name="{{$name}}" id="{{$name}}-savedpath" value="{{ old($column, $value) }}">
+        <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
+            <input readonly style="background-color: #fff" type="text" id="{{$name}}-savedpath" name="{{$name}}" value="{{ old($column, $value) }}" class="form-control title" placeholder="{{$label}}">
+        </div>
 	    @include('admin::form.help-block')
     </div>
 </div>

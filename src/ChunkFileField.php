@@ -10,6 +10,7 @@
 namespace Encore\ChunkFileUpload;
 
 use Encore\Admin\Form\Field;
+use http\Url;
 
 class ChunkFileField extends Field {
     public $view = 'chunk-file-upload::chunk-file-upload';
@@ -74,11 +75,15 @@ class ChunkFileField extends Field {
 
         $name = $this->formatName ( $this->column );
         $prefix = config ('admin.route.prefix');
+        $prefix = trim ( $prefix , '/' );
+        $prefix = $prefix ? '/' . $prefix : '';
+
         $this->script = <<<SRC
-        window.chunk_file.prefix = '$prefix';//admin前缀
         window.chunk_file.fileNumLimit = '$this->fileNumLimit';//文件数量
         window.chunk_file.saveType = '$this->saveType';//保存格式
         window.chunk_file.fileSizeLimit = '$this->fileSizeLimit';//文件总大小
+        window.chunk_file.prefix = '$prefix';//文件总大小
+        
         accept = [
             {
                 title: 'accepts',

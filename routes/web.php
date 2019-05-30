@@ -2,6 +2,7 @@
 
 use Encore\ChunkFileUpload\Http\Controllers\ChunkFileUploadController;
 
+
 Route::get('chunk-file-upload/get_qiniu_token', ChunkFileUploadController::class.'@getQiniuToken');
 Route::post('chunk-file-upload/upload', ChunkFileUploadController::class.'@upload');
 Route::post('chunk-file-upload/upload/mkblk/{block}', ChunkFileUploadController::class.'@uploadMkblk');

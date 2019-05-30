@@ -1575,7 +1575,7 @@
                     deferred = Base.Deferred(),
                     options = $.extend({}, {
                         container: opts.paste,
-                        accept: opts.accept
+                        .: opts.accept
                     }),
                     paste;
     
