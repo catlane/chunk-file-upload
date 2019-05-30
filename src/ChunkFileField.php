@@ -13,16 +13,20 @@ use Encore\Admin\Form\Field;
 
 class ChunkFileField extends Field {
     public $view = 'chunk-file-upload::chunk-file-upload';
-    protected $disk;
-    protected $extensions;
-    protected $mimeTypes;
-    protected $fileSingleSizeLimit;
+    protected $disk;//磁盘
+    protected $extensions;//后缀
+    protected $mimeTypes;//文件蕾西
+    protected $fileSizeLimit;//文件总大小
+    protected $fileNumLimit;//上传数量
+    protected $saveType;//保存格式
 
     public function __construct ( $column , array $arguments = [] ) {
         $this->disk = config ( 'chunk_file_upload.default.disk' );
         $this->extensions = config ( 'chunk_file_upload.default.extensions' );
         $this->mimeTypes = config ( 'chunk_file_upload.default.mimeTypes' );
-        $this->fileSingleSizeLimit = config ( 'chunk_file_upload.default.fileSingleSizeLimit' );
+        $this->fileSizeLimit = config ( 'chunk_file_upload.default.fileSizeLimit' );
+        $this->fileNumLimit = config ( 'chunk_file_upload.default.fileNumLimit' );
+        $this->saveType = config ( 'chunk_file_upload.default.saveType' );
         parent::__construct ( $column , $arguments );
     }
 
@@ -42,8 +46,17 @@ class ChunkFileField extends Field {
         return $this;
     }
 
-    public function fileSingleSizeLimit ( $fileSingleSizeLimit ) {
-        $this->fileSingleSizeLimit = $fileSingleSizeLimit;
+    public function fileSizeLimit ( $fileSizeLimit ) {
+        $this->fileSizeLimit = $fileSizeLimit;
+        return $this;
+    }
+
+    public function fileNumLimit ($fileNumLimit) {
+        $this->fileNumLimit = $fileNumLimit;
+        return $this;
+    }
+    public function saveType ($saveType) {
+        $this->saveType = $saveType;
         return $this;
     }
 
@@ -60,7 +73,12 @@ class ChunkFileField extends Field {
         }
 
         $name = $this->formatName ( $this->column );
+        $prefix = config ('admin.route.prefix');
         $this->script = <<<SRC
+        window.chunk_file.prefix = '$prefix';//admin前缀
+        window.chunk_file.fileNumLimit = '$this->fileNumLimit';//文件数量
+        window.chunk_file.saveType = '$this->saveType';//保存格式
+        window.chunk_file.fileSizeLimit = '$this->fileSizeLimit';//文件总大小
         accept = [
             {
                 title: 'accepts',
@@ -68,8 +86,7 @@ class ChunkFileField extends Field {
                 mimeTypes: '{$this->mimeTypes}' 
             }
         ];
-        console.log(accept)
-		chunk_file ('$name',accept,'$this->disk','$driver','{$this->fileSingleSizeLimit}');
+		chunk_file ('$name',accept,'$this->disk','$driver');
         
 SRC;
 

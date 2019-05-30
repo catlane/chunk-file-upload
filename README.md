@@ -11,9 +11,14 @@ laravel-admin extension
 ## 安装
 
 ```
-$ composer require catlane/chunk-file-upload" 
+$ composer require catlane/chunk-file-upload
 
 $ php artisan vendor:publish --tag=chunk-file-upload
+```
+
+## 注册进Laravel-admin
+```
+Encore\Admin\Form::extend('chunk_file', \Encore\ChunkFileUpload\ChunkFileField::class);
 ```
 
 然后配置 `config/chunk_file_upload.php`:
@@ -48,15 +53,32 @@ $ php artisan vendor:publish --tag=chunk-file-upload
             'disk' => 'public' ,//默认磁盘
             'extensions' => 'jpg,png,mp4' ,//后缀
             'mimeTypes' => 'image/*,video/*' ,//类型
-            'fileSingleSizeLimit' => 10737418240 ,//上传文件限制大小，默认10G,默认单位为b
+            'fileSizeLimit' => 10737418240 ,//上传文件限制总大小，默认10G,默认单位为b
+            'fileNumLimit' => '5' ,//文件上传总数量
+            'saveType' => 'json', //多文件上传存储格式，json:['a.jpg','b.jpg']
         ]
 ```
+
 ## 使用
-在for表单中使用
+
+单文件上传：
 ```
 $form->chunk_file('file', '视频');
 ```
-####可选方法
+## 显示
+
+在grid中显示，单图：
+```
+$grid->picture ( '图片' )->image ('http://test.com:81/storage/', 300);
+```
+多图:
+```
+$grid->picture ( '图片' )->display(function ($picture) {
+    return json_decode($picture, true);
+})->image ('http://test.com:81/storage/', 300);
+```
+
+###可选方法
 
 当然，以下各种方法也可以在config中直接定义
 
@@ -68,8 +90,11 @@ $form->chunk_file('file', '视频');
 
 `mimeTypes`：文件类型
 
-`fileSingleSizeLimit`：文件上传大小
+`fileSizeLimit`：文件上传大小
 
+`fileNumLimit`：上传文件数量
+
+`saveType`：多文件上传存储格式，json:['a.jpg','b.jpg']
 
 License
 ------------

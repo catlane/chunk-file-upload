@@ -35,7 +35,9 @@ return [
         'disk' => 'public' ,//默认磁盘
         'extensions' => 'jpg,png,mp4' ,//后缀
         'mimeTypes' => 'image/*,video/*' ,//类型
-        'fileSingleSizeLimit' => 10737418240 ,//上传文件限制大小，默认10G,默认单位为b
+        'fileSizeLimit' => 10737418240 ,//上传文件限制总大小，默认10G,默认单位为b
+        'fileNumLimit' => '5' ,//文件上传总数量
+        'saveType' => 'json', //多文件上传存储格式，json:['a.jpg','b.jpg']
     ]
 
 

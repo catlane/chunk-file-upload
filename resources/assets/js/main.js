@@ -1,4 +1,4 @@
-function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
+function chunk_file ( name , accept , disk , driver ) {
 
     var $wrap = $ ( '#uploader' ) ,
         // 图片容器
@@ -90,18 +90,18 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
                 window['expressinstallcallback'] = function ( state ) {
                     switch ( state ) {
                         case 'Download.Cancelled':
-                            swal('您取消了更新！', '', 'error').then(function() {
-                            });
+                            swal ( '您取消了更新！' , '' , 'error' ).then ( function () {
+                            } );
                             break;
 
                         case 'Download.Failed':
-                            swal('安装失败！', '', 'error').then(function() {
-                            });
+                            swal ( '安装失败！' , '' , 'error' ).then ( function () {
+                            } );
                             break;
 
                         default:
-                            swal('安装已成功，请刷新页面！', '', 'error').then(function() {
-                            });
+                            swal ( '安装已成功，请刷新页面！' , '' , 'error' ).then ( function () {
+                            } );
                             break;
                     }
                     delete window['expressinstallcallback'];
@@ -133,19 +133,19 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
 
         return;
     } else if ( !WebUploader.Uploader.support () ) {
-        swal('Web Uploader 不支持您的浏览器！', '', 'error').then(function() {
-        });
+        swal ( 'Web Uploader 不支持您的浏览器！' , '' , 'error' ).then ( function () {
+        } );
         return;
     }
 
     var options = {
-        tokenUrl: "/chunk-file-upload/get_qiniu_token" ,
+        tokenUrl: '/' + window.chunk_file.prefix + '/' + "chunk-file-upload/get_qiniu_token" ,
         mockToken: false ,
-        hash: false,
-        disk:disk
+        hash: false ,
+        disk: disk
     };
     if ( driver == 'local' ) {//本地
-        options.host = '/chunk-file-upload/upload';
+        options.host = '/' + window.chunk_file.prefix + '/' + 'chunk-file-upload/upload';
     } else if ( driver = 'qiniu' ) {
         options.host = "http://up.qiniu.com";
     }
@@ -176,8 +176,8 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
         chunked: true ,
         chunkSize: 4 * 1024 * 1024 ,
         threads: 5 ,
-        fileNumLimit: 1 ,
-        fileSizeLimit: fileSingleSizeLimit ,
+        fileNumLimit: window.chunk_file.fileNumLimit ,
+        fileSizeLimit: window.chunk_file.fileSizeLimit ,
         // duplicate: false
     } );
 
@@ -185,32 +185,46 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
     var m = new Map ();
 
     // 添加“添加文件”的按钮，
-    uploader.addButton ( {
-        id: '#filePicker2' ,
-        label: '重新选择'
-    } );
+    if ( window.chunk_file.fileNumLimit <= 1 ) {
+        uploader.addButton ( {
+            id: '#filePicker2' ,
+            label: '重新选择'
+        } );
+    }else{
+        uploader.addButton ( {
+            id: '#filePicker2' ,
+            label: '继续选择'
+        } );
+    }
+
 
 
     //只能单传图片
     uploader.on ( "beforeFileQueued" , function ( file ) {
-        if ( $ ( 'ul.filelist li' ).length ) {
-            var file_id = $ ( 'ul.filelist' ).children ( 'li' ).attr ( 'id' );
-            uploader.removeFile ( file_id );
+        if ( window.chunk_file.fileNumLimit <= 1 ) {//单传
+            if ( $ ( 'ul.filelist li' ).length ) {
+                var file_id = $ ( 'ul.filelist' ).children ( 'li' ).attr ( 'id' );
+                uploader.removeFile ( file_id );
+            }
         }
+
     } );
     //错误提示
-    uploader.on ( "error" , function ( type,handler ) {
+    uploader.on ( "error" , function ( type , handler ) {
         switch ( type ) {
             case 'Q_EXCEED_NUM_LIMIT':
-                swal('上传文件总数量不能超过'+ uploader.options.fileNumLimit, '', 'error').then(function() {});
+                swal ( '上传文件总数量不能超过' + uploader.options.fileNumLimit + '个', '' , 'error' ).then ( function () {
+                } );
                 break;
 
             case 'Q_EXCEED_SIZE_LIMIT':
-                swal('上传文件大小不能超过' + uploader.options.fileSizeLimit + "KB", '', 'error').then(function() {});
+                swal ( '上传文件大小不能超过' + uploader.options.fileSizeLimit + "KB" , '' , 'error' ).then ( function () {
+                } );
                 break;
 
             case 'Q_TYPE_DENIED':
-                swal('上传文件类型不被允许', '', 'error').then(function() {});
+                swal ( '上传文件类型不被允许' , '' , 'error' ).then ( function () {
+                } );
                 break;
         }
     } );
@@ -244,7 +258,7 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
                 };
                 token = options.mockTokenValue;
             }
-        }else{//laravel传递laravelkey
+        } else {//laravel传递laravelkey
             uploader.options.formData._token = $ ( 'meta[name="csrf-token"]' ).attr ( 'content' );
         }
 
@@ -284,6 +298,9 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
     } );
 
     uploader.on ( "uploadSuccess" , function ( file , res ) {
+        //成功之后，给li加上key值
+        $ ( '#' + file.id ).attr ( 'dataSrc' , res.key );
+
         if ( parseInt ( file.size ) <= parseInt ( uploader.options.chunkSize ) ) {//大于就分片，小于就完毕
             UploadComplete ( file , res );
         } else {
@@ -346,8 +363,8 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
     } );
 
     $info.on ( 'click' , '.ignore' , function () {
-        swal('已忽略', '', 'error').then(function() {
-        });
+        swal ( '已忽略' , '' , 'error' ).then ( function () {
+        } );
     } );
 
     $upload.addClass ( 'state-' + state );
@@ -375,8 +392,8 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
                         }
                     }
                 } else {
-                    swal(res.msg, '', 'error').then(function() {
-                    });
+                    swal ( res.msg , '' , 'error' ).then ( function () {
+                    } );
                     throw '获取token错误';
                 }
             }
@@ -390,9 +407,9 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
             $.ajax ( {
                 headers: {
                     'X-CSRF-TOKEN': $ ( 'meta[name="csrf-token"]' ).attr ( 'content' ) ,
-                    'file-id' : file.id,
+                    'file-id': file.id ,
                     'file-ext': file.source.ext ,
-                    'disk':disk
+                    'disk': disk
                 } ,
                 type: 'POST' ,
                 url: options.host + '/mkfile/' + file.size ,
@@ -411,9 +428,9 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
             $.ajax ( {
                 headers: {
                     'X-CSRF-TOKEN': $ ( 'meta[name="csrf-token"]' ).attr ( 'content' ) ,
-                    'file-id' : file.id,
+                    'file-id': file.id ,
                     'file-ext': file.source.ext ,
-                    'disk':disk
+                    'disk': disk
                 } ,
                 type: 'POST' ,
                 url: options.host + '/mkfile/' + file.size + '/key/' + URLSafeBase64Encode ( uploader.options.formData.key ) ,
@@ -432,8 +449,26 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
     }
 
     function UploadComplete ( file , res ) {
-        console.log ( res );
-        $ ( '#' + name + '-savedpath' ).val ( res.key );
+        if ( window.chunk_file.fileNumLimit <= 1 ) {
+            $ ( '#' + name + '-savedpath' ).val ( res.key );
+        } else {
+            if ( window.chunk_file.saveType == 'json' ) {//为json类型
+                //先拿出来
+                var data = $ ( '#' + name + '-savedpath' ).val ();
+                if ( !data ) {//为空
+                    data = new Array ();
+                    data.push ( res.key );
+
+                } else {
+                    data = JSON.parse( data );
+                    data.push ( res.key );
+                }
+                $ ( '#' + name + '-savedpath' ).val ( JSON.stringify ( data ) );
+
+            }
+
+        }
+
         ctx = new Array ();
         uploader.options.chunked = true;
     }
@@ -640,8 +675,9 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
             if ( prev === 'progress' ) {
                 $prgress.hide ().width ( 0 );
             } else if ( prev === 'queued' ) {
-                $li.off ( 'mouseenter mouseleave' );
-                $btns.remove ();
+                // $li.off ( 'mouseenter mouseleave' );
+                // $btns.remove ();//暂时不删除
+
             }
 
             // 成功
@@ -656,6 +692,7 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
                 $info.remove ();
                 $prgress.css ( 'display' , 'block' );
             } else if ( cur === 'complete' ) {
+                //这是成功了
                 $li.append ( '<span class="success"></span>' );
             }
 
@@ -729,6 +766,24 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
         delete percentages[file.id];
         updateTotalProgress ();
         $li.off ().find ( '.file-panel' ).off ().end ().remove ();
+
+        //然后删除数组文件
+        var dataSrc = $li.attr ( 'dataSrc' );
+        var data = $ ( '#' + name + '-savedpath' ).val ();
+        if ( data ) {//不为空
+            data = JSON.parse( data );
+            for (var i = 0; i < data.length; i++) {
+                if (dataSrc == data[i] ) {
+                    data.splice ( i , 1 );
+                }
+            }
+            if ( !data.length ) {
+                data = '';
+            }else{
+                data = JSON.stringify ( data );
+            }
+            $ ( '#' + name + '-savedpath' ).val ( data );
+        }
     }
 
     function setState ( val ) {
@@ -783,8 +838,8 @@ function chunk_file ( name , accept , disk , driver ,fileSingleSizeLimit) {
             case 'finish':
                 stats = uploader.getStats ();
                 if ( stats.successNum ) {
-                    swal('上传成功', '', 'success').then(function() {
-                    });
+                    swal ( '上传成功' , '' , 'success' ).then ( function () {
+                    } );
                 } else {
                     // 没有成功的图片，重设
                     state = 'done';
