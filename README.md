@@ -14,6 +14,9 @@ laravel-admin extension
 $ composer require catlane/chunk-file-upload
 
 $ php artisan vendor:publish --tag=chunk-file-upload
+
+$ php artisan storage:link
+
 ```
 
 ## 注册进Laravel-admin
