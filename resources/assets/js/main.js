@@ -1,5 +1,6 @@
 function chunk_file ( name , accept , disk , driver ) {
-
+    var initVal = $ ( '#' + name + '-savedpath' ).val ();
+    initVal = initVal ? true : false ;
     var $wrap = $ ( '#uploader' ) ,
         // 图片容器
         $queue = $ ( '<ul class="filelist"></ul>' )
@@ -453,6 +454,11 @@ function chunk_file ( name , accept , disk , driver ) {
             $ ( '#' + name + '-savedpath' ).val ( res.key );
         } else {
             if ( window.chunk_file.saveType == 'json' ) {//为json类型
+
+                if ( initVal ) {//如果初始有数据
+                    $ ( '#' + name + '-savedpath' ).val ( '' );
+                    initVal = false;//然后置false
+                }
                 //先拿出来
                 var data = $ ( '#' + name + '-savedpath' ).val ();
                 if ( !data ) {//为空

@@ -1,8 +1,8 @@
 {
     "name": "catlane/chunk-file-upload",
-    "description": "description...",
+    "description": "文件上传小扩展，可支持大文件分块分片上传到七牛云or本地，优化您上传大文件的苦恼",
     "type": "library",
-    "keywords": ["laravel-admin", "extension"],
+    "keywords": ["laravel-admin", "extension","catlane","chunk_file"],
     "homepage": "https://github.com/catlane/chunk-file-upload",
     "license": "MIT",
     "authors": [
