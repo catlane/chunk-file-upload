@@ -78,11 +78,13 @@ class ChunkFileField extends Field {
         $prefix = trim ( $prefix , '/' );
         $prefix = $prefix ? '/' . $prefix : '';
 
+        $qn_area = isset( $config ) ? $config[ 'qn_area' ] : '';
         $this->script = <<<SRC
         window.chunk_file.fileNumLimit = '$this->fileNumLimit';//文件数量
         window.chunk_file.saveType = '$this->saveType';//保存格式
         window.chunk_file.fileSizeLimit = '$this->fileSizeLimit';//文件总大小
         window.chunk_file.prefix = '$prefix';//文件总大小
+        window.upload_qn.area = '$qn_area';//七牛块区域
         
         accept = [
             {
