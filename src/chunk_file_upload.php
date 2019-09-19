@@ -29,6 +29,7 @@ return [
             'secret_key' => '*****' ,  //SecretKey
             'bucket' => '***' ,  //Bucket名字
             'url' => '*******' ,  // 填写文件访问根url
+            'qn_area'=> 'http://up.qiniu.com',
         ]
     ] ,
     'default' => [
