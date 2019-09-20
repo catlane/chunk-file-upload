@@ -148,8 +148,8 @@ function chunk_file ( name , accept , disk , driver ) {
     if ( driver == 'local' ) {//本地
         options.host = window.chunk_file.prefix + '/' + 'chunk-file-upload/upload';
     } else if ( driver = 'qiniu' ) {
-        options.host = window.upload_qn.area;
-        
+        options.host = window.chunk_file.area;
+
     }
 
 
