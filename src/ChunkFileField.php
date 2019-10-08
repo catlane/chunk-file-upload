@@ -7,7 +7,7 @@
  * Time: 2:40 PM
  */
 
-namespace Extensions\Encore\ChunkFileUpload;
+namespace Encore\ChunkFileUpload;
 
 
 use Encore\Admin\Form\Field;
