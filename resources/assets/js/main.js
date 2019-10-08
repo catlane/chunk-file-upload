@@ -1,10 +1,10 @@
 function chunk_file ( name , accept , disk , driver ) {
     var initVal = $ ( '#' + name + '-savedpath' ).val ();
-    initVal = initVal ? true : false ;
-    var $wrap = $ ( '#uploader' ) ,
+    initVal = initVal ? true : false;
+    var $wrap = $ ( '#uploader' + name ) ,
         // 图片容器
         $queue = $ ( '<ul class="filelist"></ul>' )
-            .appendTo ( $wrap.find ( '.queueList' ) ) ,
+            .appendTo ( $wrap.find ( '#queueList' + name ) ) ,
 
         // 状态栏，包括进度和控制按钮
         $statusBar = $wrap.find ( '.statusBar' ) ,
@@ -157,12 +157,12 @@ function chunk_file ( name , accept , disk , driver ) {
         swf: "Uploader.swf" ,
         server: options.host ,
         pick: {
-            id: '#filePicker' ,
+            id: '#filePicker' + name ,
             label: '点击选择文件'
         } ,
         duplicate: true ,
         resize: false ,
-        dnd: "#dndArea" ,
+        dnd: "#dndArea" + name ,
         paste: document.body ,
         disableGlobalDnd: true ,
         thumb: {
@@ -183,22 +183,23 @@ function chunk_file ( name , accept , disk , driver ) {
         // duplicate: false
     } );
 
+
+
     var token;
     var m = new Map ();
 
     // 添加“添加文件”的按钮，
     if ( window.chunk_file.fileNumLimit <= 1 ) {
         uploader.addButton ( {
-            id: '#filePicker2' ,
+            id: '#filePicker2' + name ,
             label: '重新选择'
         } );
-    }else{
+    } else {
         uploader.addButton ( {
-            id: '#filePicker2' ,
+            id: '#filePicker2' + name ,
             label: '继续选择'
         } );
     }
-
 
 
     //只能单传图片
@@ -215,7 +216,7 @@ function chunk_file ( name , accept , disk , driver ) {
     uploader.on ( "error" , function ( type , handler ) {
         switch ( type ) {
             case 'Q_EXCEED_NUM_LIMIT':
-                swal ( '上传文件总数量不能超过' + uploader.options.fileNumLimit + '个', '' , 'error' ).then ( function () {
+                swal ( '上传文件总数量不能超过' + uploader.options.fileNumLimit + '个' , '' , 'error' ).then ( function () {
                 } );
                 break;
 
@@ -452,7 +453,7 @@ function chunk_file ( name , accept , disk , driver ) {
 
     function UploadComplete ( file , res ) {
         if ( window.chunk_file.fileNumLimit <= 1 ) {
-            $ ( '#' + name + '-savedpath' ).val ( res.key );
+            $ ( '#' + name + '-savedpath' ).val ( window.chunk_file.url + '/' + res.key );
         } else {
             if ( window.chunk_file.saveType == 'json' ) {//为json类型
 
@@ -468,8 +469,8 @@ function chunk_file ( name , accept , disk , driver ) {
 
                 } else {
                     try {
-                        data = JSON.parse( data );
-                    }catch ( e ) {
+                        data = JSON.parse ( data );
+                    } catch ( e ) {
                         data = new Array ();
                     }
 
@@ -747,22 +748,6 @@ function chunk_file ( name , accept , disk , driver ) {
                 } );
             } else {
                 $wrap.css ( 'filter' , 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (~~((file.rotation / 90) % 4 + 4) % 4) + ')' );
-                // use jquery animate to rotation
-                // $({
-                //     rotation: rotation
-                // }).animate({
-                //     rotation: file.rotation
-                // }, {
-                //     easing: 'linear',
-                //     step: function( now ) {
-                //         now = now * Math.PI / 180;
-
-                //         var cos = Math.cos( now ),
-                //             sin = Math.sin( now );
-
-                //         $wrap.css( 'filter', "progid:DXImageTransform.Microsoft.Matrix(M11=" + cos + ",M12=" + (-sin) + ",M21=" + sin + ",M22=" + cos + ",SizingMethod='auto expand')");
-                //     }
-                // });
             }
 
 
@@ -783,19 +768,19 @@ function chunk_file ( name , accept , disk , driver ) {
         var dataSrc = $li.attr ( 'dataSrc' );
         var data = $ ( '#' + name + '-savedpath' ).val ();
         if ( data ) {//不为空
-            try{
-                data = JSON.parse( data );
-            }catch ( e ) {
+            try {
+                data = JSON.parse ( data );
+            } catch ( e ) {
                 data = new Array ();
             }
-            for (var i = 0; i < data.length; i++) {
-                if (dataSrc == data[i] ) {
+            for ( var i = 0 ; i < data.length ; i++ ) {
+                if ( dataSrc == data[i] ) {
                     data.splice ( i , 1 );
                 }
             }
             if ( !data.length ) {
                 data = '';
-            }else{
+            } else {
                 data = JSON.stringify ( data );
             }
             $ ( '#' + name + '-savedpath' ).val ( data );
@@ -823,14 +808,14 @@ function chunk_file ( name , accept , disk , driver ) {
 
             case 'ready':
                 $placeHolder.addClass ( 'element-invisible' );
-                $ ( '#filePicker2' ).removeClass ( 'element-invisible' );
+                $ ( '#filePicker2' + name ).removeClass ( 'element-invisible' );
                 $queue.show ();
                 $statusBar.removeClass ( 'element-invisible' );
                 uploader.refresh ();
                 break;
 
             case 'uploading':
-                $ ( '#filePicker2' ).addClass ( 'element-invisible' );
+                $ ( '#filePicker2' + name ).addClass ( 'element-invisible' );
                 $progress.show ();
                 $upload.text ( '暂停上传' );
                 break;
@@ -842,7 +827,7 @@ function chunk_file ( name , accept , disk , driver ) {
 
             case 'confirm':
                 $progress.hide ();
-                $ ( '#filePicker2' ).removeClass ( 'element-invisible' );
+                $ ( '#filePicker2' + name ).removeClass ( 'element-invisible' );
                 $upload.text ( '开始上传' );
 
                 stats = uploader.getStats ();
@@ -913,4 +898,11 @@ function chunk_file ( name , accept , disk , driver ) {
         spans.eq ( 1 ).css ( 'width' , Math.round ( percent * 100 ) + '%' );
         updateStatus ();
     }
+
+    $ ( '#' + name + '-savedpath' ).css ( 'cursor' , 'pointer' )
+    $ ( document ).on ( 'click' , '#' + name + '-savedpath' , function () {
+        window.open ( $ ( this ).val () );
+    } );
+    return uploader;
+
 }
